@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    <ImageView android:id="@+id/image_test"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/aqi_bg"/>
+
+    <com.tomsky.gldemo.view.AqiBallView 
+        android:id="@+id/ball_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="35dip"
+        android:layout_marginRight="35dip"/>
+        
+    <Button
+        android:id="@+id/clean_btn"
+        android:layout_below="@id/image_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clean" />
+	<Button
+        android:id="@+id/clean_btn2"
+        android:layout_below="@id/image_test"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clean2" />
+</RelativeLayout>
