@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 
 import com.tomsky.gldemo.es.MyGLRenderWithProjection;
-import com.tomsky.gldemo.es.SquareRenderer;
+import com.tomsky.gldemo.view.FirstGLSurfaceView;
 
 public class MainActivity extends Activity {
 
@@ -19,11 +19,13 @@ public class MainActivity extends Activity {
 //		setContentView(R.layout.activity_main);
 		
 //		mGLView = new MyGLSurfaceView(this);
-		mGLView = new GLSurfaceView(this);
-		mGLView.setEGLConfigChooser(false);
-		mGLView.setRenderer(new SquareRenderer(this, 7));
-		mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+//		mGLView = new GLSurfaceView(this);
+//		mGLView.setEGLConfigChooser(false);
+//		mGLView.setRenderer(new SquareRenderer(this, 7));
+//		mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 //		mGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		
+		mGLView = new FirstGLSurfaceView(this);
 		setContentView(mGLView);
 	}
 
