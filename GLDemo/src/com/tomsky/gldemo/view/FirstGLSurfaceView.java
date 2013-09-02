@@ -44,13 +44,13 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 		
 		private Context context;
 		private Bitmap mBitmap;
-		private int[] textureIds;
+		private int textureId;
 		private IntBuffer texBuffer;
 		private float xrot, yrot, zrot;
 		
 		public MyGL10Render(Context context) {
 			this.context = context;
-			textureIds = new int[1];
+			
 			mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
 			Log.d("wzt", "bmp w:"+mBitmap.getWidth()+", h:"+mBitmap.getHeight());
 			mBitmap = Bitmap.createScaledBitmap(mBitmap, Utils.pow2(mBitmap.getWidth()), Utils.pow2(mBitmap.getHeight()), true);
@@ -233,8 +233,10 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			gl.glDepthFunc(GL10.GL_LEQUAL); // 深度测试类型为小于等于
 			
 			gl.glEnable(GL10.GL_TEXTURE_2D);
+			int[] textureIds = new int[1];
 			gl.glGenTextures(1, textureIds, 0); // 创建纹理
-			gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]); // 绑定要使用的纹理
+			textureId = textureIds[0];
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId); // 绑定要使用的纹理
 			GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mBitmap, 0); // 生成纹理
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
@@ -275,29 +277,29 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			
 			// 左移1.5单位，并移入屏幕6.0单位
-			gl.glTranslatef(-1.5f, 0.0f, -6.0f);
-			gl.glRotatef(mRotateTri, 0.0f, 1.0f, 0.0f);
-			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mFVertexBuffer);
-			gl.glColorPointer(4, GL10.GL_FLOAT, 0, mColorBuffer);
-//			gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
-			for (int i = 0; i < 4; i++) {
-				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, i * 3, 3);
-			}
+//			gl.glTranslatef(-1.5f, 0.0f, -6.0f);
+//			gl.glRotatef(mRotateTri, 0.0f, 1.0f, 0.0f);
+//			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mFVertexBuffer);
+//			gl.glColorPointer(4, GL10.GL_FLOAT, 0, mColorBuffer);
+////			gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
+//			for (int i = 0; i < 4; i++) {
+//				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, i * 3, 3);
+//			}
 			
 			// 以下要显示单色，需要关闭color_array
 //			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 			
 			gl.glLoadIdentity();
 			// 右移3单位
-			gl.glTranslatef(1.5f, 0.0f, -7.0f);
+			gl.glTranslatef(0.0f, 0.0f, -7.0f);
 			gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
 			gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
 			gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
 			
-			gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
 //			gl.glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 			gl.glVertexPointer(3, GL10.GL_FIXED, 0, mQuaterVertexBuffer);
-//			gl.glColorPointer(4, GL10.GL_FIXED, 0, mQuaterColorBuffer);
+			gl.glColorPointer(4, GL10.GL_FIXED, 0, mQuaterColorBuffer);
 			gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, texBuffer);
 			
 			for (int i = 0; i < 6; i++) {
@@ -307,7 +309,7 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			
 			gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-//			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 			
 			mRotateTri += 0.5f;
 			if (mRotateTri == 360) {
