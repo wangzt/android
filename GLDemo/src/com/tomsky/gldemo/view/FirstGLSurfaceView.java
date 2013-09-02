@@ -10,13 +10,20 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
+import android.util.Log;
+
+import com.tomsky.gldemo.R;
+import com.tomsky.gldemo.Utils;
 
 public class FirstGLSurfaceView extends GLSurfaceView {
 
 	public FirstGLSurfaceView(Context context) {
 		super(context);
-		setRenderer(new MyGL10Render());
+		setRenderer(new MyGL10Render(context));
 //		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 
@@ -35,7 +42,18 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 		private float mRotateTri = 0.0f;
 		private float mRotateQua = 0.0f;
 		
-		public MyGL10Render() {
+		private Context context;
+		private Bitmap mBitmap;
+		private int[] textureIds;
+		private IntBuffer texBuffer;
+		private float xrot, yrot, zrot;
+		
+		public MyGL10Render(Context context) {
+			this.context = context;
+			textureIds = new int[1];
+			mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
+			Log.d("wzt", "bmp w:"+mBitmap.getWidth()+", h:"+mBitmap.getHeight());
+			mBitmap = Bitmap.createScaledBitmap(mBitmap, Utils.pow2(mBitmap.getWidth()), Utils.pow2(mBitmap.getHeight()), true);
 			float[] coords = {
 					// 前侧面
 					0.0f, 1.0f, 0f, // 上顶点
@@ -106,31 +124,34 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 				one, one, -one, // 右上
 				-one, one, -one, // 左上
 				one, one, one, // 右下
-				
 				-one, one, one, // 左下
+				
+				// 底面
 				one, -one, one,
 				-one,-one, one,
-				
 				one,-one,-one,
 				-one,-one,-one,
-				one, one, one,
 				
+				//前面
+				one, one, one,
 				-one, one, one,
 				one, -one, one,
 				-one, -one, one,
 				
+				// 后面
 				one, -one, -one,
 				-one, -one, -one,
 				one, one, -one,
-				
 				-one, one, -one,
+				
+				// 左侧面
 				-one, one, one,
 				-one, one, -one,
-				
 				-one, -one, one,
 				-one, -one, -one,
-				one, one, -one,
 				
+				// 右侧面
+				one, one, -one,
 				one, one, one,
 				one, -one, -one,
 				one, -one, one
@@ -184,6 +205,20 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 //			short[] index = {0, 1, 2,  1, 2, 3};
 //			mQuaterIndexBuffer.put(index);
 //			mQuaterIndexBuffer.position(0);
+			
+			int[] texCoords = {
+				0, one,
+				one, one,
+				0, 0,
+				one, 0
+			};
+			ByteBuffer tbb = ByteBuffer.allocateDirect(texCoords.length * 4 * 6);
+			tbb.order(ByteOrder.nativeOrder());
+			texBuffer = tbb.asIntBuffer();
+			for (int i = 0; i < 6; i++) {
+				texBuffer.put(texCoords);
+			}
+			texBuffer.position(0);
 		}
 		
 		@Override
@@ -196,6 +231,14 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			
 			gl.glEnable(GL10.GL_DEPTH_TEST); // 启用深度测试
 			gl.glDepthFunc(GL10.GL_LEQUAL); // 深度测试类型为小于等于
+			
+			gl.glEnable(GL10.GL_TEXTURE_2D);
+			gl.glGenTextures(1, textureIds, 0); // 创建纹理
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]); // 绑定要使用的纹理
+			GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mBitmap, 0); // 生成纹理
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+			
 		}
 
 		@Override
@@ -229,6 +272,7 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			// 以下两步为绘制颜色与顶点前必做操作
 			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 			gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			
 			// 左移1.5单位，并移入屏幕6.0单位
 			gl.glTranslatef(-1.5f, 0.0f, -6.0f);
@@ -246,26 +290,32 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			gl.glLoadIdentity();
 			// 右移3单位
 			gl.glTranslatef(1.5f, 0.0f, -7.0f);
-			gl.glRotatef(mRotateQua, 1.0f, 1.0f, 1.0f);
+			gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
+			gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
+			gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
 			
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
 //			gl.glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 			gl.glVertexPointer(3, GL10.GL_FIXED, 0, mQuaterVertexBuffer);
-			gl.glColorPointer(4, GL10.GL_FIXED, 0, mQuaterColorBuffer);
+//			gl.glColorPointer(4, GL10.GL_FIXED, 0, mQuaterColorBuffer);
+			gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, texBuffer);
+			
 			for (int i = 0; i < 6; i++) {
 				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, i * 4, 4);
 			}
 //			gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 6, GL10.GL_UNSIGNED_SHORT, mQuaterIndexBuffer);
 			
+			gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+//			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+			
 			mRotateTri += 0.5f;
 			if (mRotateTri == 360) {
 				mRotateTri = 0f;
 			}
-			mRotateQua += 0.5f;
-			if (mRotateQua == 360) {
-				mRotateQua = 0f;
-			}
+			xrot += 0.5f;
+			yrot += 0.5f;
+			zrot += 0.5f;
 		}
 		
 	}
