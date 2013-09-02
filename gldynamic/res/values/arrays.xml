@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weather_array" translatable="false">
+        <item>小雨</item>
+        <item>中雨</item>
+        <item>大雨</item>
+        <item>暴雨</item>
+        <item>阵雨</item>
+        <item>雷阵雨</item>
+        <item>多云</item>
+        <item>晴</item>
+        <item>雾</item>
+        <item>霾</item>
+        <item>浮尘</item>
+        <item>沙尘</item>
+        <item>冰雹</item>
+        <item>阵雪</item>
+        <item>小雪</item>
+        <item>中雪</item>
+        <item>大雪</item>
+        <item>暴雪</item>
+        <item>阴天</item>
+    </string-array>
+</resources>

@@ -102,16 +102,69 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 //			mIndexBuffer.position(0);
 			
 			int[] quater = {
-				one, one, 0,
-				-one, one, 0,
-				one, -one, 0,
-				-one, -one, 0
+				// 顶面
+				one, one, -one, // 右上
+				-one, one, -one, // 左上
+				one, one, one, // 右下
+				
+				-one, one, one, // 左下
+				one, -one, one,
+				-one,-one, one,
+				
+				one,-one,-one,
+				-one,-one,-one,
+				one, one, one,
+				
+				-one, one, one,
+				one, -one, one,
+				-one, -one, one,
+				
+				one, -one, -one,
+				-one, -one, -one,
+				one, one, -one,
+				
+				-one, one, -one,
+				-one, one, one,
+				-one, one, -one,
+				
+				-one, -one, one,
+				-one, -one, -one,
+				one, one, -one,
+				
+				one, one, one,
+				one, -one, -one,
+				one, -one, one
 			};
 			int[] quaterColor = {
-				one, 0, 0, 0,
-				one, one, 0, 0,
-				one, one, one, 0,
-				0, one, one, 0
+				0, one, 0, one,
+				0, one, 0, one,
+				0, one, 0, one,
+				0, one, 0, one,
+				
+				one, one/2, 0, one,
+				one, one/2, 0, one,
+				one, one/2, 0, one,
+				one, one/2, 0, one,
+				
+				one, 0, 0, one,
+				one, 0, 0, one,
+				one, 0, 0, one,
+				one, 0, 0, one,
+				
+				one, one, 0, one,
+				one, one, 0, one,
+				one, one, 0, one,
+				one, one, 0, one,
+				
+				0, 0, one, one,
+				0, 0, one, one,
+				0, 0, one, one,
+				0, 0, one, one,
+				
+				one, 0, one, one,
+				one, 0, one, one,
+				one, 0, one, one,
+				one, 0, one, one,
 			};
 			ByteBuffer qbb = ByteBuffer.allocateDirect(quater.length * 4);
 			qbb.order(ByteOrder.nativeOrder());
@@ -125,12 +178,12 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			mQuaterColorBuffer.put(quaterColor);
 			mQuaterColorBuffer.position(0);
 			
-			ByteBuffer qibb = ByteBuffer.allocateDirect(6 * 2);
-			qibb.order(ByteOrder.nativeOrder());
-			mQuaterIndexBuffer = qibb.asShortBuffer();
-			short[] index = {0, 1, 2,  1, 2, 3};
-			mQuaterIndexBuffer.put(index);
-			mQuaterIndexBuffer.position(0);
+//			ByteBuffer qibb = ByteBuffer.allocateDirect(6 * 2);
+//			qibb.order(ByteOrder.nativeOrder());
+//			mQuaterIndexBuffer = qibb.asShortBuffer();
+//			short[] index = {0, 1, 2,  1, 2, 3};
+//			mQuaterIndexBuffer.put(index);
+//			mQuaterIndexBuffer.position(0);
 		}
 		
 		@Override
@@ -188,20 +241,23 @@ public class FirstGLSurfaceView extends GLSurfaceView {
 			}
 			
 			// 以下要显示单色，需要关闭color_array
-			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+//			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 			
 			gl.glLoadIdentity();
 			// 右移3单位
-			gl.glTranslatef(1.5f, 0.0f, -6.0f);
-			gl.glRotatef(mRotateQua, 0.0f, 0.0f, 1.0f);
-			gl.glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+			gl.glTranslatef(1.5f, 0.0f, -7.0f);
+			gl.glRotatef(mRotateQua, 1.0f, 1.0f, 1.0f);
+			
+//			gl.glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 			gl.glVertexPointer(3, GL10.GL_FIXED, 0, mQuaterVertexBuffer);
-//			gl.glColorPointer(4, GL10.GL_FIXED, 0, mQuaterColorBuffer);
-//			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-			gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 6, GL10.GL_UNSIGNED_SHORT, mQuaterIndexBuffer);
+			gl.glColorPointer(4, GL10.GL_FIXED, 0, mQuaterColorBuffer);
+			for (int i = 0; i < 6; i++) {
+				gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, i * 4, 4);
+			}
+//			gl.glDrawElements(GL10.GL_TRIANGLE_STRIP, 6, GL10.GL_UNSIGNED_SHORT, mQuaterIndexBuffer);
 			
 			gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-			
+			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 			mRotateTri += 0.5f;
 			if (mRotateTri == 360) {
 				mRotateTri = 0f;
