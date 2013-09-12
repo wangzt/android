@@ -6,10 +6,13 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView.Renderer;
 
 import com.tomsky.gldynamic.model.Background;
+import com.tomsky.gldynamic.model.IconTexture;
 
 public class WeatherRenderer implements Renderer {
 
 	private Background mBackground;
+	
+	private IconTexture mIconTexture;
 	
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -31,6 +34,14 @@ public class WeatherRenderer implements Renderer {
 		
 		mBackground = new Background();
 		mBackground.loadTexture(gl);
+		
+		mIconTexture = new IconTexture();
+		mIconTexture.loadTexture(gl);
+		
+//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT);
+//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT);
+//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
+//		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
 	}
 
 	@Override
@@ -58,7 +69,7 @@ public class WeatherRenderer implements Renderer {
 		gl.glTranslatef(0.0f, 0.0f, -6.0f); 
 		
 		mBackground.draw(gl);
-
+		mIconTexture.draw(gl);
 	}
 
 }
